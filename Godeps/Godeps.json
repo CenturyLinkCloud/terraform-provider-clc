@@ -1,0 +1,86 @@
+{
+	"ImportPath": "github.com/CenturyLinkCloud/terraform-provider-clc",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/hashicorp/errwrap",
+			"Rev": "7554cd9344cec97297fa6649b055a8c98c2a1e55"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/go-multierror",
+			"Rev": "56912fb08d85084aa318edcf2bba735b97cf35c5"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl",
+			"Rev": "54864211433d45cb780682431585b3e573b49e4a"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/config",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/dag",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/dot",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/flatmap",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/helper/multierror",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/helper/url",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/plugin",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/rpc",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/terraform/terraform",
+			"Comment": "v0.6.3-243-g140b337",
+			"Rev": "140b3377f43ba55ea427bc66ad358d8f087b3411"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/yamux",
+			"Rev": "8e00b30457b1486b012f204b82ec92ae6b547de8"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/copystructure",
+			"Rev": "6fc66267e9da7d155a9d3bd489e00dad02666dc6"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/go-homedir",
+			"Rev": "1f6da4a72e57d4e7edd4a7295a585e0a3999a2d4"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/mapstructure",
+			"Rev": "281073eb9eb092240d33ef253c404f1cca550309"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/reflectwalk",
+			"Rev": "eecf4c70c626c7cfbb95c90195bc34d386c74ac6"
+		}
+	]
+}
