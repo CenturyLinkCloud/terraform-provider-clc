@@ -58,6 +58,12 @@ func resourceCLCServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"power_state": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				Default:  nil,
+			},
 			"private_ip_address": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -75,10 +81,6 @@ func resourceCLCServer() *schema.Resource {
 				StateFunc: passwordState,
 			},
 
-			"power_state": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"created_date": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -188,6 +190,7 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	var edits []api.Update = make([]api.Update, 0)
 	var updates []api.Update = make([]api.Update, 0)
 	var i int
+	poll := make(chan *status.Response, 1)
 	d.Partial(true)
 	s, err := client.Server.Get(id)
 	if err != nil {
@@ -225,10 +228,28 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("Failed saving updates: %v", err)
 		}
 
-		poll := make(chan *status.Response, 1)
 		client.Status.Poll(resp.ID, poll)
 		status := <-poll
 		LOG.Printf("Server updated! status: %v", status)
+	}
+
+	if d.HasChange("power_state") {
+		st := d.Get("power_state").(string)
+		LOG.Printf("POWER: %v => %v", s.Details.Powerstate, st)
+		newst := stateFromString(st)
+		servers, err := client.Server.PowerState(newst, s.Name)
+		if err != nil {
+			return fmt.Errorf("Failed setting power state to: %v", newst)
+		}
+		js, _ := json.Marshal(servers)
+		LOG.Printf("received power state response: %v", string(js))
+		ok, id := servers[0].GetStatusID()
+		if !ok {
+			return fmt.Errorf("Failed extracting power state queue status from: %v", servers[0])
+		}
+		client.Status.Poll(id, poll)
+		status := <-poll
+		LOG.Printf("state updated: %v", status)
 	}
 	d.Partial(false)
 	return nil

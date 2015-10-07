@@ -5,6 +5,7 @@ import (
 
 	clc "github.com/CenturyLinkCloud/clc-sdk"
 	"github.com/CenturyLinkCloud/clc-sdk/group"
+	"github.com/CenturyLinkCloud/clc-sdk/server"
 	"github.com/CenturyLinkCloud/clc-sdk/status"
 	"golang.org/x/crypto/sha3"
 )
@@ -45,4 +46,26 @@ func deepGroups(g group.Groups, m *map[string]string) {
 	for _, sg := range g.Groups {
 		deepGroups(sg, m)
 	}
+}
+
+func stateFromString(st string) server.PowerState {
+	switch st {
+	case "on", "started":
+		return server.On
+	case "off", "stopped":
+		return server.Off
+	case "pause", "paused":
+		return server.Pause
+	case "reboot":
+		return server.Reboot
+	case "reset":
+		return server.Reset
+	case "shutdown":
+		return server.ShutDown
+	case "start_maintenance":
+		return server.StartMaintenance
+	case "stop_maintenance":
+		return server.StopMaintenance
+	}
+	return -1
 }
