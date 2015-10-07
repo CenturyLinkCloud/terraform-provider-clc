@@ -43,6 +43,11 @@ func resourceCLCServer() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
+			"password": &schema.Schema{
+				Type:      schema.TypeString,
+				Required:  true,
+				StateFunc: passwordState,
+			},
 			// optional
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
@@ -58,29 +63,20 @@ func resourceCLCServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"power_state": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				Default:  nil,
-			},
+			// sorta computed
 			"private_ip_address": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				Default:  nil,
 			},
-			// computed
-			"public_ip_address": &schema.Schema{
+			"power_state": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
 				Computed: true,
+				Default:  nil,
 			},
-			"password": &schema.Schema{
-				Type:      schema.TypeString,
-				Required:  true,
-				StateFunc: passwordState,
-			},
-
+			// computed
 			"created_date": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -156,8 +152,7 @@ func resourceCLCServerRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*clc.Client)
 	s, err := client.Server.Get(d.Id())
 	if err != nil {
-		//return fmt.Errorf("Failed fetching server: %v - %v", d.Id(), err)
-		LOG.Println("Failed finding server: %v. Marking destroyed", d.Id())
+		LOG.Printf("Failed finding server: %v. Marking destroyed", d.Id())
 		d.SetId("")
 		return nil
 	}
@@ -166,7 +161,6 @@ func resourceCLCServerRead(d *schema.ResourceData, meta interface{}) error {
 
 	if len(s.Details.IPaddresses) > 0 {
 		d.Set("private_ip_address", s.Details.IPaddresses[0].Internal)
-		d.Set("public_ip_address", s.Details.IPaddresses[0].Public)
 	}
 
 	d.Set("name", s.Name)
