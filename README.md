@@ -82,3 +82,28 @@ value                             | Type     | Forces New | Value Type | Descrip
 
 
 full API options documented: [https://www.ctl.io/api-docs/v2/#servers-create-server]
+
+
+#### `clc_public_ip`
+
+Creates a new public IP and attaches to existing server instance
+
+```
+
+resource "clc_public_ip" "mgmt" {
+  server_id = "${clc_server.<SOME_NAMED_RESOURCE>.id}"
+  internal_ip_address = "${clc_server.<SOME_NAMED_RESOURCE>.private_ip_address}"
+  source_restrictions
+     { cidr = "108.19.67.15/32" }
+  ports
+    {
+      protocol = "TCP"
+      port = 22
+    }
+  ports
+    {
+      protocol = "TCP"
+      port = 80
+    }
+}
+```
