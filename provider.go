@@ -37,7 +37,7 @@ func Provider() terraform.ResourceProvider {
 			"account": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("CLC_ALIAS", nil),
+				DefaultFunc: schema.EnvDefaultFunc("CLC_ACCOUNT", nil),
 				Description: "Your CLC account alias",
 			},
 		},
@@ -65,5 +65,6 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	for _, a := range alerts.Items {
 		fmt.Println(a)
 	}
+	LOG.Printf("%v\\%v", ac, un)
 	return client, nil
 }
