@@ -11,11 +11,15 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
+// someplace to dump plugin logs
 var LOG log.Logger
 
 func Provider() terraform.ResourceProvider {
-	logFile, _ := os.OpenFile("/tmp/plugin.log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
-	LOG = *(log.New(logFile, "[CLC] ", log.Lshortfile))
+	fout := os.Stdout
+	if os.Getenv("DEBUG") != "" {
+		fout, _ = os.OpenFile("plugin.log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+	}
+	LOG = *(log.New(fout, "[CLC] ", log.Lshortfile))
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
