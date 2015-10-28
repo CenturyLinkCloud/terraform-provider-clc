@@ -167,6 +167,7 @@ func parseIPSpec(d *schema.ResourceData) (*[]server.Port, *[]server.SourceRestri
 			port, err := strconv.Atoi(m["port"].(string))
 			if err != nil {
 				LOG.Printf("Failed parsing port '%v'. skipping", m["port"])
+				continue
 			}
 			p.Protocol = m["protocol"].(string)
 			p.Port = port

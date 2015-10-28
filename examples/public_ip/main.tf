@@ -1,7 +1,7 @@
 resource "clc_group" "web" {
-  location_id = "WA1"
+  location_id = "CA1"
   name = "web"
-  parent = "Default Group"
+  parent = "CHOI"
 }
 
 resource "clc_server" "bastion" {
@@ -12,7 +12,7 @@ resource "clc_server" "bastion" {
   group_id = "${clc_group.web.id}"
   cpu = 1
   memory_mb = 1024
-  password = "Green123$"
+  password = "Green987$"
   power_state = "started"
 }
 
@@ -28,7 +28,6 @@ resource "clc_public_ip" "mgmt" {
     }
 }
 
-
 resource "clc_server" "web01" {
   name_template = "NGX"
   description = "web server"
@@ -37,7 +36,7 @@ resource "clc_server" "web01" {
   group_id = "${clc_group.web.id}"
   cpu = 4
   memory_mb = 2048
-  password = "Green123456$"
+  password = "Green123$"
   power_state = "started"
 
   depends_on = "clc_public_ip.mgmt"

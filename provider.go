@@ -65,6 +65,6 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	for _, a := range alerts.Items {
 		fmt.Println(a)
 	}
-	LOG.Printf("%v\\%v", ac, un)
+	LOG.Printf("account: %v %v", ac, un)
 	return client, nil
 }

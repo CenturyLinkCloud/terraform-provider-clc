@@ -44,9 +44,8 @@ func resourceCLCServer() *schema.Resource {
 				Required: true,
 			},
 			"password": &schema.Schema{
-				Type:      schema.TypeString,
-				Required:  true,
-				StateFunc: passwordState,
+				Type:     schema.TypeString,
+				Required: true,
 			},
 			// optional
 			"description": &schema.Schema{
@@ -184,6 +183,7 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	var edits []api.Update = make([]api.Update, 0)
 	var updates []api.Update = make([]api.Update, 0)
 	var i int
+
 	poll := make(chan *status.Response, 1)
 	d.Partial(true)
 	s, err := client.Server.Get(id)
@@ -206,6 +206,13 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 	// updates are queue processed
+	if d.HasChange("password") {
+		d.SetPartial("password")
+		o, _ := d.GetChange("password")
+		old := o.(string)
+		pass := d.Get("password").(string)
+		updates = append(updates, server.UpdateCredentials(old, pass))
+	}
 	if i = d.Get("cpu").(int); i != s.Details.CPU {
 		d.SetPartial("cpu")
 		updates = append(updates, server.UpdateCPU(i))
