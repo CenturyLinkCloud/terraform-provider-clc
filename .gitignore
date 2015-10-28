@@ -1,4 +1,7 @@
 plugin
 Godeps/_workspace
 Godeps/README
-
+plugin.log
+terraform-provider-clc
+terraform.tfstate
+terraform.tfstate.backup
