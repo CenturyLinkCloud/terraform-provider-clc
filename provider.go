@@ -43,9 +43,11 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"clc_server":    resourceCLCServer(),
-			"clc_group":     resourceCLCGroup(),
-			"clc_public_ip": resourceCLCPublicIP(),
+			"clc_server":             resourceCLCServer(),
+			"clc_group":              resourceCLCGroup(),
+			"clc_public_ip":          resourceCLCPublicIP(),
+			"clc_load_balancer":      resourceCLCLoadBalancer(),
+			"clc_load_balancer_pool": resourceCLCLoadBalancerPool(),
 		},
 
 		ConfigureFunc: providerConfigure,
