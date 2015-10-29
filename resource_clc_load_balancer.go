@@ -90,6 +90,26 @@ func resourceCLCLoadBalancerRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceCLCLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) error {
 	//client := meta.(*clc.Client)
+	update := lb.LoadBalancer{}
+	client := meta.(*clc.Client)
+	dc := d.Get("data_center").(string)
+	id := d.Id()
+
+	if d.HasChange("name") {
+		d.SetPartial("name")
+		update.Status = d.Get("name").(string)
+	}
+	if d.HasChange("description") {
+		d.SetPartial("description")
+		update.Status = d.Get("description").(string)
+	}
+	if d.HasChange("status") {
+		d.SetPartial("status")
+		update.Status = d.Get("status").(string)
+	}
+	if update.Name != "" || update.Description != "" || update.Status != "" {
+		client.LB.Update(dc, id, update)
+	}
 	return nil
 }
 
