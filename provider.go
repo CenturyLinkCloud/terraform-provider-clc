@@ -60,6 +60,11 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	ac := d.Get("account").(string)
 	config := api.NewConfig(un, pw, ac)
 	client := clc.New(config)
+	err := client.Authenticate()
+	if err != nil {
+		return nil, fmt.Errorf("Failed authenticated with provided credentials: %v", err)
+	}
+
 	alerts, err := client.Alert.GetAll()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to connect to the CLC api because %s", err)
