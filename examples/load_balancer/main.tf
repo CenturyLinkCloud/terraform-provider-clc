@@ -90,7 +90,8 @@ resource "clc_load_balancer_pool" "pool" {
   data_center = "${clc_group.web.location_id}"
   load_balancer = "${clc_load_balancer.lb.id}"
 
-  depends_on = ["clc_load_balancer.lb", "clc_server.node01", "clc_server.node02"]
+  #depends_on = ["clc_load_balancer.lb", "clc_server.node01", "clc_server.node02"]
+  depends_on = ["clc_server.node01", "clc_server.node02"]
 
   nodes
     {
