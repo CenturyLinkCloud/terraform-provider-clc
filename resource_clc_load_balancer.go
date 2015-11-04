@@ -64,19 +64,19 @@ func resourceCLCLoadBalancerCreate(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Failed creating load balancer under %v/%v: %v", dc, name, err)
 	}
 	d.SetId(l.ID)
-
 	a1, _ := json.Marshal(l)
 	LOG.Println(string(a1))
-	return resourceCLCLoadBalancerRead(d, meta)
+	// it's created, but possible race condition if we query here
+	return nil
 }
 
 func resourceCLCLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*clc.Client)
 	dc := d.Get("data_center").(string)
-	lbname := d.Id()
-	resp, err := client.LB.Get(dc, lbname)
+	id := d.Id()
+	resp, err := client.LB.Get(dc, id)
 	if err != nil {
-		LOG.Printf("Failed finding load balancer %v/%v. Marking destroyed", dc, lbname)
+		LOG.Printf("Failed finding load balancer %v/%v. Marking destroyed", dc, id)
 		d.SetId("")
 		return nil
 	}
