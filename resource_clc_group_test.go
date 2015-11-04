@@ -10,6 +10,11 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
+// things to test:
+//   resolves to existing group
+//   does not nuke a group w/ no parents (root group)
+//   change a name on a group
+
 func TestAccGroup_Basic(t *testing.T) {
 	var resp group.Response
 	resource.Test(t, resource.TestCase{
