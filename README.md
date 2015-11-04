@@ -114,6 +114,12 @@ resource "clc_public_ip" "mgmt" {
       protocol = "TCP"
       port = 80
     }
+  ports
+    {
+      protocol = "TCP"
+      port = 8080
+      port_to = 9000
+    }
 }
 ```
 
