@@ -19,13 +19,16 @@ func hashedString(key string) string {
 	return base64.StdEncoding.EncodeToString(hash[:])
 }
 
-func waitStatus(client *clc.Client, id string) {
+func waitStatus(client *clc.Client, id string) error {
 	// block until queue is processed and server is up
 	poll := make(chan *status.Response, 1)
-	client.Status.Poll(id, poll)
+	err := client.Status.Poll(id, poll)
+	if err != nil {
+		return nil
+	}
 	status := <-poll
 	LOG.Printf("status %v", status)
-	return
+	return nil
 }
 
 func dcGroups(dcname string, meta interface{}) (map[string]string, error) {

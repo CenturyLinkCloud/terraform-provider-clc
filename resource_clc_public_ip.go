@@ -21,6 +21,7 @@ func resourceCLCPublicIP() *schema.Resource {
 			"server_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"internal_ip_address": &schema.Schema{
 				Type:     schema.TypeString,
@@ -81,7 +82,10 @@ func resourceCLCPublicIPCreate(d *schema.ResourceData, meta interface{}) error {
 	b, _ := json.Marshal(resp)
 	LOG.Println(string(b))
 
-	waitStatus(client, resp.ID)
+	err = waitStatus(client, resp.ID)
+	if err != nil {
+		return err
+	}
 
 	server, err := client.Server.Get(sid)
 	if err != nil {
@@ -137,7 +141,10 @@ func resourceCLCPublicIPUpdate(d *schema.ResourceData, meta interface{}) error {
 		b, _ := json.Marshal(resp)
 		LOG.Println(string(b))
 
-		waitStatus(client, resp.ID)
+		err = waitStatus(client, resp.ID)
+		if err != nil {
+			return err
+		}
 		LOG.Printf("Successfully updated %v with %v", ip, req)
 	}
 	return nil
@@ -152,7 +159,10 @@ func resourceCLCPublicIPDelete(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Failed deleting public ip: %v", err)
 	}
-	waitStatus(client, resp.ID)
+	err = waitStatus(client, resp.ID)
+	if err != nil {
+		return err
+	}
 	fmt.Printf("Public IP sucessfully deleted: %v", ip)
 	return nil
 }

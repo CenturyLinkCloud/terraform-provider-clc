@@ -139,10 +139,13 @@ func resourceCLCServerCreate(d *schema.ResourceData, meta interface{}) error {
 	if !ok {
 		return fmt.Errorf("Failed extracting status to poll on %v: %v", resp, err)
 	}
-	waitStatus(client, st)
+	err = waitStatus(client, st)
+	if err != nil {
+		return err
+	}
 
 	s, err := client.Server.Get(uuid)
-	d.SetId(s.Name)
+	d.SetId(strings.ToUpper(s.Name))
 	LOG.Printf("Server created. id: %v", s.Name)
 	return resourceCLCServerRead(d, meta)
 }
@@ -229,9 +232,15 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("Failed saving updates: %v", err)
 		}
 
-		client.Status.Poll(resp.ID, poll)
+		err = client.Status.Poll(resp.ID, poll)
+		if err != nil {
+			return err
+		}
 		status := <-poll
-		LOG.Printf("Server updated! status: %v", status)
+		if status.Failed() {
+			return fmt.Errorf("Update failed")
+		}
+		LOG.Printf("Server updated! status: %v", status.Status)
 	}
 
 	if d.HasChange("power_state") {
@@ -248,10 +257,17 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if !ok {
 			return fmt.Errorf("Failed extracting power state queue status from: %v", servers[0])
 		}
-		client.Status.Poll(id, poll)
+		err = client.Status.Poll(id, poll)
+		if err != nil {
+			return err
+		}
 		status := <-poll
+		if status.Failed() {
+			return fmt.Errorf("Update failed")
+		}
 		LOG.Printf("state updated: %v", status)
 	}
+
 	d.Partial(false)
 	return nil
 }
@@ -268,7 +284,10 @@ func resourceCLCServerDelete(d *schema.ResourceData, meta interface{}) error {
 	if !ok {
 		return fmt.Errorf("Failed extracting status to poll on %v: %v", resp, err)
 	}
-	waitStatus(client, st)
+	err = waitStatus(client, st)
+	if err != nil {
+		return err
+	}
 	fmt.Printf("Server sucessfully deleted: %v", st)
 	return nil
 }

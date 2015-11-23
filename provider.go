@@ -70,7 +70,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		return nil, fmt.Errorf("Failed to connect to the CLC api because %s", err)
 	}
 	for _, a := range alerts.Items {
-		fmt.Println(a)
+		LOG.Printf("Received alert: %v", a)
 	}
 	LOG.Printf("account: %v %v", ac, un)
 	return client, nil
