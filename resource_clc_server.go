@@ -3,6 +3,7 @@ package terraform_clc
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	clc "github.com/CenturyLinkCloud/clc-sdk"
 	"github.com/CenturyLinkCloud/clc-sdk/api"
@@ -62,6 +63,16 @@ func resourceCLCServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"custom_fields": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
+			"additional_disks": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
 			// sorta computed
 			"private_ip_address": &schema.Schema{
 				Type:     schema.TypeString,
@@ -84,18 +95,9 @@ func resourceCLCServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			/*
 				"ttl": &schema.Schema{
 					Type:     schema.TypeInt,
-					Optional: true,
-				},
-				"custom_fields": &schema.Schema{
-					Type:     schema.TypeList,
-					Optional: true,
-				},
-				"additional_disks": &schema.Schema{
-					Type:     schema.TypeList,
 					Optional: true,
 				},
 				"packages": &schema.Schema{
@@ -125,6 +127,21 @@ func resourceCLCServerCreate(d *schema.ResourceData, meta interface{}) error {
 		Type:           d.Get("type").(string),
 		IPaddress:      d.Get("private_ip_address").(string),
 	}
+
+	var err error
+	disks, err := parseAdditionalDisks(d)
+	if err != nil {
+		return fmt.Errorf("Failed parsing disks: %v", err)
+	} else {
+		spec.Additionaldisks = disks
+	}
+	fields, err := parseCustomfields(d)
+	if err != nil {
+		return fmt.Errorf("Failed setting customfields: %v", err)
+	} else {
+		spec.Customfields = fields
+	}
+
 	resp, err := client.Server.Create(spec)
 	if err != nil || !resp.IsQueued {
 		return fmt.Errorf("Failed creating server: %v", err)
@@ -224,6 +241,26 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		d.SetPartial("memory_mb")
 		updates = append(updates, server.UpdateMemory(i/1024)) // takes GB
 	}
+
+	if d.HasChange("custom_fields") {
+		d.SetPartial("custom_fields")
+		fields, err := parseCustomfields(d)
+		if err != nil {
+			return fmt.Errorf("Failed setting customfields: %v", err)
+		} else {
+			updates = append(updates, server.UpdateCustomfields(fields))
+		}
+	}
+	if d.HasChange("additional_disks") {
+		d.SetPartial("additional_disks")
+		disks, err := parseAdditionalDisks(d)
+		if err != nil {
+			return fmt.Errorf("Failed parsing disks: %v", err)
+		} else {
+			updates = append(updates, server.UpdateAdditionaldisks(disks))
+		}
+	}
+
 	js, _ := json.Marshal(updates)
 	LOG.Printf("updates: %v", string(js))
 	if len(updates) > 0 {

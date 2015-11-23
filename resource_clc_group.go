@@ -42,6 +42,11 @@ func resourceCLCGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"custom_fields": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
 		},
 	}
 }
