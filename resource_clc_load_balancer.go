@@ -39,11 +39,6 @@ func resourceCLCLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"pools": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeMap},
-			},
 		},
 	}
 }
