@@ -19,4 +19,16 @@ resource "clc_server" "srv" {
   cpu = 2
   memory_mb = 2048
   password = "Green123$"
+  additional_disks
+    {
+        path = "/var"
+        size_gb = 100
+        type = "partitioned"
+    }
+  additional_disks
+    {
+        size_gb = 10
+        type = "raw"
+    }
+
 }
