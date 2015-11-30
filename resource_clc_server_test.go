@@ -165,16 +165,16 @@ func testAccCheckServerUpdatedDisks(n string, resp *server.Response) resource.Te
 }
 
 const testAccCheckServerConfig_basic = `
-resource "clc_group" "acc_test_group" {
+resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
-    name = "acc_test_group"
+    name = "acc_test_group_server"
     parent = "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
     name_template = "test"
     source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group.id}"
+    group_id = "${clc_group.acc_test_group_server.id}"
     cpu = 1
     memory_mb = 1024
     password = "Green123$"
@@ -182,16 +182,16 @@ resource "clc_server" "acc_test_server" {
 `
 
 const testAccCheckServerConfig_cpumem = `
-resource "clc_group" "acc_test_group" {
+resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
-    name = "acc_test_group"
+    name = "acc_test_group_server"
     parent = "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
     name_template = "test"
     source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group.id}"
+    group_id = "${clc_group.acc_test_group_server.id}"
     cpu = 2
     memory_mb = 2048
     password = "Green123$"
@@ -200,16 +200,16 @@ resource "clc_server" "acc_test_server" {
 `
 
 const testAccCheckServerConfig_power = `
-resource "clc_group" "acc_test_group" {
+resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
-    name = "acc_test_group"
+    name = "acc_test_group_server"
     parent = "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
     name_template = "test"
     source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group.id}"
+    group_id = "${clc_group.acc_test_group_server.id}"
     cpu = 2
     memory_mb = 2048
     password = "Green123$"
@@ -218,16 +218,16 @@ resource "clc_server" "acc_test_server" {
 `
 
 const testAccCheckServerConfig_disks = `
-resource "clc_group" "acc_test_group" {
+resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
-    name = "acc_test_group"
+    name = "acc_test_group_server"
     parent = "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
     name_template = "test"
     source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group.id}"
+    group_id = "${clc_group.acc_test_group_server.id}"
     cpu = 2
     memory_mb = 2048
     password = "Green123$"

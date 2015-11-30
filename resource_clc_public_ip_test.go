@@ -123,16 +123,16 @@ func testAccCheckPublicIPNIC(n string, resp *server.PublicIP) resource.TestCheck
 }
 
 var testAccCheckPublicIPConfig_basic = `
-resource "clc_group" "acc_test_group" {
+resource "clc_group" "acc_test_group_ip" {
     location_id = "WA1"
-    name = "acc_test_group"
+    name = "acc_test_group_ip"
     parent = "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
     name_template = "test"
     source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group.id}"
+    group_id = "${clc_group.acc_test_group_ip.id}"
     cpu = 1
     memory_mb = 1024
     password = "Green123$"

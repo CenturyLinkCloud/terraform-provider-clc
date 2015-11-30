@@ -25,12 +25,12 @@ func TestAccGroup_Basic(t *testing.T) {
 			resource.TestStep{
 				Config: testAccCheckGroupConfig_basic,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckGroupExists("clc_group.acc_test", &resp),
+					testAccCheckGroupExists("clc_group.acc_test_group", &resp),
 					testAccCheckGroupParent(&resp),
 					resource.TestCheckResourceAttr(
-						"clc_group.acc_test", "name", "foobar"),
+						"clc_group.acc_test_group", "name", "foobar"),
 					resource.TestCheckResourceAttr(
-						"clc_group.acc_test", "location_id", "WA1"),
+						"clc_group.acc_test_group", "location_id", "WA1"),
 				),
 			},
 		},
@@ -95,7 +95,7 @@ func testAccCheckGroupExists(n string, resp *group.Response) resource.TestCheckF
 }
 
 const testAccCheckGroupConfig_basic = `
-resource "clc_group" "acc_test" {
+resource "clc_group" "acc_test_group" {
     location_id = "WA1"
     name = "foobar"
     parent = "Default Group"
