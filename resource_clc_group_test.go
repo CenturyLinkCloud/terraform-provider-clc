@@ -25,12 +25,12 @@ func TestAccGroup_Basic(t *testing.T) {
 			resource.TestStep{
 				Config: testAccCheckGroupConfig_basic,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckGroupExists("clc_group.foobar", &resp),
+					testAccCheckGroupExists("clc_group.acc_test", &resp),
 					testAccCheckGroupParent(&resp),
 					resource.TestCheckResourceAttr(
-						"clc_group.foobar", "name", "foobar"),
+						"clc_group.acc_test", "name", "foobar"),
 					resource.TestCheckResourceAttr(
-						"clc_group.foobar", "location_id", "WA1"),
+						"clc_group.acc_test", "location_id", "WA1"),
 				),
 			},
 		},
@@ -39,19 +39,15 @@ func TestAccGroup_Basic(t *testing.T) {
 
 func testAccCheckGroupDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*clc.Client)
-
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "clc_group" {
 			continue
 		}
-
 		_, err := client.Group.Get(rs.Primary.ID)
-
 		if err == nil {
 			return fmt.Errorf("Group still exists")
 		}
 	}
-
 	return nil
 }
 
@@ -99,7 +95,7 @@ func testAccCheckGroupExists(n string, resp *group.Response) resource.TestCheckF
 }
 
 const testAccCheckGroupConfig_basic = `
-resource "clc_group" "foobar" {
+resource "clc_group" "acc_test" {
     location_id = "WA1"
     name = "foobar"
     parent = "Default Group"
