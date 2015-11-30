@@ -61,6 +61,14 @@ resource "clc_group" "group01" {
 }
 ```
 
+value                             | Type     | Forces New | Value Type | Description
+--------------------------------- | -------- | ---------- | ---------- | -----------
+`name`                            | Required | no         | string     | Name of the group.
+`parent`                          | Required | no         | string     | Name of the parent group this group will fall under.
+`location_id`                     | Required | no         | string     | Datacenter name.
+`description`                     | Optional | no         | string     | Description.
+`custom_fields`                   | Optional | no         | list<map>  | Custom metadata fields. { id , value } (requires pre-registered account-wide custom fields)
+
 ### `clc_server`
 
 Creates a new server instance.
@@ -83,11 +91,16 @@ value                             | Type     | Forces New | Value Type | Descrip
 `name_tempate`                    | Required | no         | string     | Name of the server. Will be permuted by platform
 `source_server_id`                | Required | yes        | string     | VM image to use
 `group_id`                        | Required | no         | string     | ID of the group this server will belong to
+`cpu`                             | Required | no         | int        | Number of virtual CPUs
+`memory_mb`                       | Required | no         | int        | Provisioned memory in MB
 `type`                            | Required | no         | string     | Type of build: { standard, hyperscale, bareMetal }
 `password`                        | Required | no         | string     | Root password
 `description`                     | Optional | no         | string     | Description of server
+`power_state`                     | Optional | no         | string     | Default: `started`. Set/Change power state: { started | on | stopped | off | paused | reboot | reset | shutdown }
 `private_ip_address`              | Optional | no         | string     | Generated if not provided
 `network_id`                      | Optional | no         | string     | ID of the network to place server in
+`additional_disks`                | Optional | no         | list<map>  | Specify additional disks. { path, size_gb, type } (see docs)
+`custom_fields`                   | Optional | no         | list<map>  | Custom metadata fields. { id , value } (requires pre-registered account-wide custom fields)
 
 
 full API options documented: [https://www.ctl.io/api-docs/v2/#servers-create-server]
@@ -123,6 +136,13 @@ resource "clc_public_ip" "mgmt" {
 }
 ```
 
+value                             | Type     | Forces New | Value Type | Description
+--------------------------------- | -------- | ---------- | ---------- | -----------
+`server_id`                       | Required | yes        | string     | Name of the server to attach IP on.
+`internal_ip_address`             | Optional | no         | string     | Internal address of the NIC to attach to. If not provided, a new internal IP will be provisioned.
+`ports`                           | Required | no         | list<map>  | List of allowed ports to open on provisioned IP.
+`soruce_restrictions`             | Optional | no         | list<map>  | List of CIDR blocks to deny inbound traffic on.
+
 
 #### `clc_load_balancer`
 
@@ -137,6 +157,9 @@ resource "clc_load_balancer" "api" {
   status = "enabled"
 }
 
+output "lb_ip" {
+  value = "clc_load_balancer.api.ip_address"
+}
 ```
 
 full API options documented: [https://www.ctl.io/api-docs/v2/#shared-load-balancers-create-shared-load-balancer]
