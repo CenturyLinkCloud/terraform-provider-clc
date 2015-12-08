@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 //   does not nuke a group w/ no parents (root group)
 //   change a name on a group
 
-func TestAccGroup_Basic(t *testing.T) {
+func TestAccGroupBasic(t *testing.T) {
 	var resp group.Response
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -23,7 +23,7 @@ func TestAccGroup_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckGroupDestroy,
 		Steps: []resource.TestStep{
 			resource.TestStep{
-				Config: testAccCheckGroupConfig_basic,
+				Config: testAccCheckGroupConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckGroupExists("clc_group.acc_test_group", &resp),
 					testAccCheckGroupParent(&resp),
@@ -94,7 +94,7 @@ func testAccCheckGroupExists(n string, resp *group.Response) resource.TestCheckF
 	}
 }
 
-const testAccCheckGroupConfig_basic = `
+const testAccCheckGroupConfigBasic = `
 resource "clc_group" "acc_test_group" {
     location_id = "WA1"
     name = "foobar"

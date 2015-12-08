@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"encoding/json"
@@ -166,7 +166,7 @@ func resourceCLCLoadBalancerPoolDelete(d *schema.ResourceData, meta interface{})
 }
 
 func parseNodes(d *schema.ResourceData) ([]lb.Node, error) {
-	nodes := make([]lb.Node, 0)
+	var nodes []lb.Node
 	raw := d.Get("nodes")
 	if raw == nil {
 		log.Println("WARNING: pool missing nodes")

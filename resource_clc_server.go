@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"encoding/json"
@@ -132,15 +132,13 @@ func resourceCLCServerCreate(d *schema.ResourceData, meta interface{}) error {
 	disks, err := parseAdditionalDisks(d)
 	if err != nil {
 		return fmt.Errorf("Failed parsing disks: %v", err)
-	} else {
-		spec.Additionaldisks = disks
 	}
+	spec.Additionaldisks = disks
 	fields, err := parseCustomfields(d)
 	if err != nil {
 		return fmt.Errorf("Failed setting customfields: %v", err)
-	} else {
-		spec.Customfields = fields
 	}
+	spec.Customfields = fields
 
 	resp, err := client.Server.Create(spec)
 	if err != nil || !resp.IsQueued {
@@ -200,8 +198,8 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	id := d.Id()
 
 	var err error
-	var edits []api.Update = make([]api.Update, 0)
-	var updates []api.Update = make([]api.Update, 0)
+	var edits []api.Update
+	var updates []api.Update
 	var i int
 
 	poll := make(chan *status.Response, 1)
@@ -247,18 +245,16 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		fields, err := parseCustomfields(d)
 		if err != nil {
 			return fmt.Errorf("Failed setting customfields: %v", err)
-		} else {
-			updates = append(updates, server.UpdateCustomfields(fields))
 		}
+		updates = append(updates, server.UpdateCustomfields(fields))
 	}
 	if d.HasChange("additional_disks") {
 		d.SetPartial("additional_disks")
 		disks, err := parseAdditionalDisks(d)
 		if err != nil {
 			return fmt.Errorf("Failed parsing disks: %v", err)
-		} else {
-			updates = append(updates, server.UpdateAdditionaldisks(disks))
 		}
+		updates = append(updates, server.UpdateAdditionaldisks(disks))
 	}
 
 	js, _ := json.Marshal(updates)

@@ -1,4 +1,4 @@
-plugin
+bin/terraform-provider-clc.*
 Godeps/_workspace
 Godeps/README
 plugin.log

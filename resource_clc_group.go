@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"encoding/json"

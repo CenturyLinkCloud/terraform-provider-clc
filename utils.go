@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"encoding/base64"
@@ -78,7 +78,7 @@ func stateFromString(st string) server.PowerState {
 }
 
 func parseCustomfields(d *schema.ResourceData) ([]api.Customfields, error) {
-	fields := make([]api.Customfields, 0)
+	var fields []api.Customfields
 	if v := d.Get("custom_fields"); v != nil {
 		for _, v := range v.([]interface{}) {
 			m := v.(map[string]interface{})
@@ -96,7 +96,7 @@ func parseAdditionalDisks(d *schema.ResourceData) ([]server.Disk, error) {
 	// some complexity here: create has a different format than update
 	// on-create: { path, sizeGB, type }
 	// on-update: { diskId, sizeGB, (path), (type=partitioned) }
-	disks := make([]server.Disk, 0)
+	var disks []server.Disk
 	if v := d.Get("additional_disks"); v != nil {
 		for _, v := range v.([]interface{}) {
 			m := v.(map[string]interface{})

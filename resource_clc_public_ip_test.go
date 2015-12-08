@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ import (
 //   update existing rule
 //   CIDR restriction
 
-func TestAccPublicIP_Basic(t *testing.T) {
+func TestAccPublicIPBasic(t *testing.T) {
 	var resp server.PublicIP
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -24,7 +24,7 @@ func TestAccPublicIP_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckPublicIPDestroy,
 		Steps: []resource.TestStep{
 			resource.TestStep{
-				Config: testAccCheckPublicIPConfig_basic,
+				Config: testAccCheckPublicIPConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPublicIPExists("clc_public_ip.eip", &resp),
 					testAccCheckPublicIPNIC("clc_public_ip.eip", &resp),
@@ -122,7 +122,7 @@ func testAccCheckPublicIPNIC(n string, resp *server.PublicIP) resource.TestCheck
 	}
 }
 
-var testAccCheckPublicIPConfig_basic = `
+var testAccCheckPublicIPConfigBasic = `
 resource "clc_group" "acc_test_group_ip" {
     location_id = "WA1"
     name = "acc_test_group_ip"

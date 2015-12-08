@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ import (
 //   add'l disks
 //   custom fields? (skip)
 
-func TestAccServer_Basic(t *testing.T) {
+func TestAccServerBasic(t *testing.T) {
 	var resp server.Response
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -26,7 +26,7 @@ func TestAccServer_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckServerDestroy,
 		Steps: []resource.TestStep{
 			resource.TestStep{
-				Config: testAccCheckServerConfig_basic,
+				Config: testAccCheckServerConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckServerExists("clc_server.acc_test_server", &resp),
 					resource.TestCheckResourceAttr(
@@ -39,7 +39,7 @@ func TestAccServer_Basic(t *testing.T) {
 			},
 			// update simple attrs
 			resource.TestStep{
-				Config: testAccCheckServerConfig_cpumem,
+				Config: testAccCheckServerConfigCPUMEM,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckServerExists("clc_server.acc_test_server", &resp),
 					resource.TestCheckResourceAttr(
@@ -51,7 +51,7 @@ func TestAccServer_Basic(t *testing.T) {
 			},
 			// toggle power
 			resource.TestStep{
-				Config: testAccCheckServerConfig_power,
+				Config: testAccCheckServerConfigPower,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckServerExists("clc_server.acc_test_server", &resp),
 					resource.TestCheckResourceAttr(
@@ -130,15 +130,15 @@ func testAccCheckServerUpdatedSpec(n string, resp *server.Response) resource.Tes
 		}
 		cpu := srv.Details.CPU
 		mem := srv.Details.MemoryMB
-		s_cpu := fmt.Sprintf("%v", cpu)
-		s_mem := fmt.Sprintf("%v", mem)
-		ex_cpu := rs.Primary.Attributes["cpu"]
-		ex_mem := rs.Primary.Attributes["memory_mb"]
-		if s_cpu != ex_cpu {
-			return fmt.Errorf("Expected CPU to be %v but found %v", ex_cpu, s_cpu)
+		scpu := fmt.Sprintf("%v", cpu)
+		smem := fmt.Sprintf("%v", mem)
+		excpu := rs.Primary.Attributes["cpu"]
+		exmem := rs.Primary.Attributes["memory_mb"]
+		if scpu != excpu {
+			return fmt.Errorf("Expected CPU to be %v but found %v", excpu, scpu)
 		}
-		if s_mem != ex_mem {
-			return fmt.Errorf("Expected MEM to be %v but found %v", ex_mem, s_mem)
+		if smem != exmem {
+			return fmt.Errorf("Expected MEM to be %v but found %v", exmem, smem)
 		}
 		return nil
 	}
@@ -164,7 +164,7 @@ func testAccCheckServerUpdatedDisks(n string, resp *server.Response) resource.Te
 	}
 }
 
-const testAccCheckServerConfig_basic = `
+const testAccCheckServerConfigBasic = `
 resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
     name = "acc_test_group_server"
@@ -181,7 +181,7 @@ resource "clc_server" "acc_test_server" {
 }
 `
 
-const testAccCheckServerConfig_cpumem = `
+const testAccCheckServerConfigCPUMEM = `
 resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
     name = "acc_test_group_server"
@@ -199,7 +199,7 @@ resource "clc_server" "acc_test_server" {
 }
 `
 
-const testAccCheckServerConfig_power = `
+const testAccCheckServerConfigPower = `
 resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
     name = "acc_test_group_server"
@@ -217,7 +217,7 @@ resource "clc_server" "acc_test_server" {
 }
 `
 
-const testAccCheckServerConfig_disks = `
+const testAccCheckServerConfigDisks = `
 resource "clc_group" "acc_test_group_server" {
     location_id = "WA1"
     name = "acc_test_group_server"

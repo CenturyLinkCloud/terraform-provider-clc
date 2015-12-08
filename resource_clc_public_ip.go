@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"encoding/json"
@@ -109,9 +109,9 @@ func resourceCLCPublicIPCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceCLCPublicIPRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*clc.Client)
-	public_ip := d.Id()
+	pip := d.Id()
 	s := d.Get("server_id").(string)
-	resp, err := client.Server.GetPublicIP(s, public_ip)
+	resp, err := client.Server.GetPublicIP(s, pip)
 	if err != nil {
 		LOG.Printf("Failed finding public ip: %v. Marking destroyed", d.Id())
 		d.SetId("")
@@ -168,8 +168,8 @@ func resourceCLCPublicIPDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func parseIPSpec(d *schema.ResourceData) (*[]server.Port, *[]server.SourceRestriction) {
-	ports := make([]server.Port, 0)
-	sources := make([]server.SourceRestriction, 0)
+	var ports []server.Port
+	var sources []server.SourceRestriction
 	if v := d.Get("ports"); v != nil {
 		for _, v := range v.([]interface{}) {
 			m := v.(map[string]interface{})

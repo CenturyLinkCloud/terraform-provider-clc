@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"testing"
@@ -11,5 +11,5 @@ import (
 //   created w/ pool
 //   works for 80 and 443 together
 
-func TestAccLoadBalancer_Basic(t *testing.T) {
+func TestAccLoadBalancerBasic(t *testing.T) {
 }

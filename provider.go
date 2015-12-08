@@ -1,4 +1,4 @@
-package terraform_clc
+package clc
 
 import (
 	"fmt"
@@ -11,9 +11,10 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-// someplace to dump plugin logs
+// LOG - someplace to dump plugin logs
 var LOG log.Logger
 
+// Provider implements ResourceProvider for CLC
 func Provider() terraform.ResourceProvider {
 	fout := os.Stdout
 	if os.Getenv("DEBUG") != "" {
