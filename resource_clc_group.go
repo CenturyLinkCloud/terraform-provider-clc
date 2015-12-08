@@ -56,11 +56,12 @@ func resourceCLCGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	dc := d.Get("location_id").(string)
 	m, err := dcGroups(dc, meta)
 	if err != nil {
+		return fmt.Errorf("Failed pulling groups in location %v - %v", dc, err)
 	}
 	name := d.Get("name").(string)
 	// use an existing group if we have one
 	if m[name] != "" {
-		LOG.Println("Using EXISTING group: %v => %v", name, m[name])
+		LOG.Printf("Using EXISTING group: %v => %v", name, m[name])
 		d.SetId(m[name])
 		return nil
 	}

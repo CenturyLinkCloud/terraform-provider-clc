@@ -199,6 +199,6 @@ full API options documented: [https://www.ctl.io/api-docs/v2/#shared-load-balanc
 
   `go test .`
 
-  `TF_ACC=1 go test -v . # run acceptance tests. (requires ENV vars)`
+  `TF_ACC=1 go test -v -timeout=30m . # run acceptance tests. (requires ENV vars)`
 
   `go build -o path/to/desired/terraform-provider-clc bin/terraform-provider-clc/main.go`
