@@ -7,6 +7,6 @@ import (
 
 func main() {
 	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: terraform_clc.Provider,
+		ProviderFunc: clc.Provider,
 	})
 }
