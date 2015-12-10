@@ -28,6 +28,8 @@ Alternatively,
 
 ## Example
 
+sample main.tf
+
     resource "clc_group" "web" {
       location_id = "WA1"
       name = "TERRA"
@@ -43,9 +45,18 @@ Alternatively,
       password = "Green123$"
     }    
 
+
 More [examples][4]
 
 [4]:https://github.com/CenturyLinkCloud/terraform-provider-clc/tree/master/examples
+
+
+
+## Troubleshooting
+
+in addition to terraform's [debug env vars](https://terraform.io/docs/configuration/environment-variables.html), invoking terraform with `DEBUG=1` will dump a `plugin.log` file in the local directory with additional debugging output specific to the clc plugin.
+
+
 
 
 ## Usage
