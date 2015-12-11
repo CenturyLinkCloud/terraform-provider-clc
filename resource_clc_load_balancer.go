@@ -61,7 +61,13 @@ func resourceCLCLoadBalancerCreate(d *schema.ResourceData, meta interface{}) err
 	d.SetId(l.ID)
 	a1, _ := json.Marshal(l)
 	LOG.Println(string(a1))
-	// it's created, but possible race condition if we query here
+	// platform bug - race condition: poll for non-404
+	for {
+		_, err := client.LB.Get(dc, l.ID)
+		if err == nil {
+			break
+		}
+	}
 	return nil
 }
 
@@ -92,11 +98,11 @@ func resourceCLCLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) err
 
 	if d.HasChange("name") {
 		d.SetPartial("name")
-		update.Status = d.Get("name").(string)
+		update.Name = d.Get("name").(string)
 	}
 	if d.HasChange("description") {
 		d.SetPartial("description")
-		update.Status = d.Get("description").(string)
+		update.Description = d.Get("description").(string)
 	}
 	if d.HasChange("status") {
 		d.SetPartial("status")
