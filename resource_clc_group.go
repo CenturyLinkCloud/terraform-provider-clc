@@ -115,6 +115,10 @@ func resourceCLCGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*clc.Client)
 	id := d.Id()
 	LOG.Printf("Deleting group %v", id)
-	client.Group.Delete(id)
+	st, err := client.Group.Delete(id)
+	if err != nil {
+		return fmt.Errorf("Failed deleting group: %v with err: %v", id, err)
+	}
+	waitStatus(client, st.ID)
 	return nil
 }

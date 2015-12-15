@@ -32,6 +32,9 @@ func waitStatus(client *clc.Client, id string) error {
 	}
 	status := <-poll
 	LOG.Printf("status %v", status)
+	if status.Failed() {
+		return fmt.Errorf("unsuccessful job %v failed with status: %v", id, status.Status)
+	}
 	return nil
 }
 

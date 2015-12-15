@@ -26,10 +26,10 @@ func TestAccPublicIPBasic(t *testing.T) {
 			resource.TestStep{
 				Config: testAccCheckPublicIPConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckPublicIPExists("clc_public_ip.eip", &resp),
-					testAccCheckPublicIPNIC("clc_public_ip.eip", &resp),
-					testAccCheckPublicIPPortRange("clc_public_ip.eip", &resp),
-					testAccCheckPublicIPBlockCIDR("clc_public_ip.eip", &resp),
+					testAccCheckPublicIPExists("clc_public_ip.acc_test_public_ip", &resp),
+					testAccCheckPublicIPNIC("clc_public_ip.acc_test_public_ip", &resp),
+					testAccCheckPublicIPPortRange("clc_public_ip.acc_test_public_ip", &resp),
+					testAccCheckPublicIPBlockCIDR("clc_public_ip.acc_test_public_ip", &resp),
 					//testAccCheckPublicIPUpdated("clc_public_ip.eip", &resp),
 				),
 			},
@@ -124,7 +124,7 @@ func testAccCheckPublicIPNIC(n string, resp *server.PublicIP) resource.TestCheck
 
 var testAccCheckPublicIPConfigBasic = `
 resource "clc_group" "acc_test_group_ip" {
-    location_id = "WA1"
+    location_id = "CA1"
     name = "acc_test_group_ip"
     parent = "Default Group"
 }
@@ -138,7 +138,7 @@ resource "clc_server" "acc_test_server" {
     password = "Green123$"
 }
 
-resource "clc_public_ip" "eip" {
+resource "clc_public_ip" "acc_test_public_ip" {
     server_id = "${clc_server.acc_test_server.id}"
     internal_ip_address = "${clc_server.acc_test_server.private_ip_address}"
     source_restrictions

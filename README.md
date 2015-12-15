@@ -235,8 +235,8 @@ full API options documented: [https://www.ctl.io/api-docs/v2/#shared-load-balanc
 
   `go test .`
 
-  `TF_ACC=1 go test -v -timeout=30m .` run acceptance tests. (requires ENV vars)
+  `TF_ACC=1 go test -v -timeout=60m .` run acceptance tests. (requires ENV vars)
   
-  `DEBUG=1 TF_LOG=trace TF_ACC=1 go test  -v -timeout=30m -run LoadBalancer` narrow tests to regexp w/ api tracing
+  `DEBUG=1 TF_LOG=trace TF_LOG_PATH=./plugin.log TF_ACC=1 go test  -v -timeout=60m -run LoadBalancer` narrow tests to regexp w/ api tracing
 
   `go build -o path/to/desired/terraform-provider-clc bin/terraform-provider-clc/main.go`
