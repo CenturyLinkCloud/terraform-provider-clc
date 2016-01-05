@@ -21,6 +21,6 @@ for GOOS in $OS; do
         arch="$GOOS-$GOARCH"
         binary="bin/terraform-provider-clc.$arch"
         echo "Building $binary"
-        GOOS=$GOOS GOARCH=$GOARCH go build -o $binary
+        GOOS=$GOOS GOARCH=$GOARCH go build -o $binary bin/terraform-provider-clc/main.go
     done
 done
