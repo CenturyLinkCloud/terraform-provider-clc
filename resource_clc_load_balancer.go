@@ -1,8 +1,8 @@
 package clc
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 
 	clc "github.com/CenturyLinkCloud/clc-sdk"
 	"github.com/CenturyLinkCloud/clc-sdk/lb"
@@ -59,8 +59,6 @@ func resourceCLCLoadBalancerCreate(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Failed creating load balancer under %v/%v: %v", dc, name, err)
 	}
 	d.SetId(l.ID)
-	a1, _ := json.Marshal(l)
-	LOG.Println(string(a1))
 	// platform bug - race condition: poll for non-404
 	for {
 		_, err := client.LB.Get(dc, l.ID)
@@ -77,7 +75,7 @@ func resourceCLCLoadBalancerRead(d *schema.ResourceData, meta interface{}) error
 	id := d.Id()
 	resp, err := client.LB.Get(dc, id)
 	if err != nil {
-		LOG.Printf("Failed finding load balancer %v/%v. Marking destroyed", dc, id)
+		log.Printf("[INFO] Failed finding load balancer %v/%v. Marking destroyed", dc, id)
 		d.SetId("")
 		return nil
 	}

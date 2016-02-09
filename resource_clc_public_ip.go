@@ -1,8 +1,8 @@
 package clc
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 	"strconv"
 
 	clc "github.com/CenturyLinkCloud/clc-sdk"
@@ -64,9 +64,6 @@ func resourceCLCPublicIPCreate(d *schema.ResourceData, meta interface{}) error {
 		ips[i.Internal] = i.Public
 	}
 
-	a, _ := json.Marshal(ips)
-	LOG.Println(string(a))
-
 	if priv != "" {
 		// use existing private ip
 		if _, present := ips[priv]; !present {
@@ -79,9 +76,6 @@ func resourceCLCPublicIPCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Failed reserving public ip: %v", err)
 	}
-	b, _ := json.Marshal(resp)
-	LOG.Println(string(b))
-
 	err = waitStatus(client, resp.ID)
 	if err != nil {
 		return err
@@ -94,12 +88,12 @@ func resourceCLCPublicIPCreate(d *schema.ResourceData, meta interface{}) error {
 	for _, i := range server.Details.IPaddresses {
 		if priv != "" && i.Internal == priv {
 			// bind
-			LOG.Printf("Public IP bound on existing internal:%v - %v", i.Internal, i.Public)
+			log.Printf("[DEBUG] Public IP bound on existing internal:%v - %v", i.Internal, i.Public)
 			d.SetId(i.Public)
 			break
 		} else if ips[i.Internal] == "" && i.Public != "" {
 			// allocate
-			LOG.Printf("Public IP allocated on new internal:%v - %v", i.Internal, i.Public)
+			log.Printf("[DEBUG] Public IP allocated on new internal:%v - %v", i.Internal, i.Public)
 			d.SetId(i.Public)
 			break
 		}
@@ -113,7 +107,7 @@ func resourceCLCPublicIPRead(d *schema.ResourceData, meta interface{}) error {
 	s := d.Get("server_id").(string)
 	resp, err := client.Server.GetPublicIP(s, pip)
 	if err != nil {
-		LOG.Printf("Failed finding public ip: %v. Marking destroyed", d.Id())
+		log.Printf("[INFO] Failed finding public ip: %v. Marking destroyed", d.Id())
 		d.SetId("")
 		return nil
 	}
@@ -138,14 +132,11 @@ func resourceCLCPublicIPUpdate(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			return fmt.Errorf("Failed updating public ip: %v", err)
 		}
-		b, _ := json.Marshal(resp)
-		LOG.Println(string(b))
-
 		err = waitStatus(client, resp.ID)
 		if err != nil {
 			return err
 		}
-		LOG.Printf("Successfully updated %v with %v", ip, req)
+		log.Printf("[INFO] Successfully updated %v with %v", ip, req)
 	}
 	return nil
 }
@@ -154,7 +145,7 @@ func resourceCLCPublicIPDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*clc.Client)
 	s := d.Get("server_id").(string)
 	ip := d.Id()
-	LOG.Printf("Deleting public ip %v", ip)
+	log.Printf("[INFO] Deleting public ip %v", ip)
 	resp, err := client.Server.DeletePublicIP(s, ip)
 	if err != nil {
 		return fmt.Errorf("Failed deleting public ip: %v", err)
@@ -163,7 +154,7 @@ func resourceCLCPublicIPDelete(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Public IP sucessfully deleted: %v", ip)
+	fmt.Printf("[INFO] Public IP sucessfully deleted: %v", ip)
 	return nil
 }
 
@@ -176,7 +167,7 @@ func parseIPSpec(d *schema.ResourceData) (*[]server.Port, *[]server.SourceRestri
 			p := server.Port{}
 			port, err := strconv.Atoi(m["port"].(string))
 			if err != nil {
-				LOG.Printf("Failed parsing port '%v'. skipping", m["port"])
+				log.Printf("[WARN] Failed parsing port '%v'. skipping", m["port"])
 				continue
 			}
 			p.Protocol = m["protocol"].(string)
@@ -184,7 +175,7 @@ func parseIPSpec(d *schema.ResourceData) (*[]server.Port, *[]server.SourceRestri
 			through := -1
 			if to := m["port_to"]; to != nil {
 				through, _ = strconv.Atoi(to.(string))
-				LOG.Printf("port range: %v-%v", port, through)
+				log.Printf("[DEBUG] port range: %v-%v", port, through)
 				p.PortTo = through
 			}
 			ports = append(ports, p)

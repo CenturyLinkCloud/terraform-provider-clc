@@ -1,12 +1,11 @@
 package clc
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/CenturyLinkCloud/clc-sdk"
 	"github.com/CenturyLinkCloud/clc-sdk/group"
-
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -61,19 +60,16 @@ func resourceCLCGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	name := d.Get("name").(string)
 	// use an existing group if we have one
 	if m[name] != "" {
-		LOG.Printf("Using EXISTING group: %v => %v", name, m[name])
+		log.Printf("[INFO] Using EXISTING group: %v => %v", name, m[name])
 		d.SetId(m[name])
 		return nil
 	}
 	// otherwise, we're creating one. we'll need a parent
 	p := d.Get("parent").(string)
 	parent := m[p]
-
 	if parent == "" {
 		return fmt.Errorf("Failed resolving parent group %s - %s", p, m)
 	}
-	LOG.Println(m)
-	LOG.Println(parent)
 
 	d.Set("parent_group_id", parent)
 	spec := group.Group{
@@ -85,9 +81,7 @@ func resourceCLCGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Failed creating group: %s", err)
 	}
-	LOG.Println("Group created")
-	b, _ := json.Marshal(resp)
-	LOG.Println(string(b))
+	log.Println("[INFO] Group created")
 	d.SetId(resp.ID)
 	return nil
 }
@@ -114,7 +108,7 @@ func resourceCLCGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceCLCGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*clc.Client)
 	id := d.Id()
-	LOG.Printf("Deleting group %v", id)
+	log.Printf("[INFO] Deleting group %v", id)
 	st, err := client.Group.Delete(id)
 	if err != nil {
 		return fmt.Errorf("Failed deleting group: %v with err: %v", id, err)

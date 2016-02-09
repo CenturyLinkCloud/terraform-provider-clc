@@ -1,7 +1,6 @@
 package clc
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -100,16 +99,12 @@ func resourceCLCLoadBalancerPoolRead(d *schema.ResourceData, meta interface{}) e
 	if err != nil {
 		return fmt.Errorf("Failed fetching pool under %v/%v: %v", dc, lbid, err)
 	}
-
 	nodes, err := client.LB.GetAllNodes(dc, lbid, id)
 	nodes2 := make([]lb.Node, len(nodes))
 	for i, n := range nodes {
 		nodes2[i] = *n
 	}
 	pool.Nodes = nodes2
-
-	a, _ := json.MarshalIndent(pool, "", "  ")
-	LOG.Println(string(a))
 	d.Set("port", pool.Port)
 	d.Set("method", pool.Method)
 	d.Set("persistence", pool.Persistence)
@@ -177,7 +172,7 @@ func parseNodes(d *schema.ResourceData) ([]lb.Node, error) {
 			m := v.(map[string]interface{})
 			p, err := strconv.Atoi(m["privatePort"].(string))
 			if err != nil {
-				LOG.Printf("Failed parsing port '%v'. skipping", m["privatePort"])
+				log.Printf("[WARN] Failed parsing port '%v'. skipping", m["privatePort"])
 				continue
 			}
 			n := lb.Node{

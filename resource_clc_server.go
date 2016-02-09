@@ -1,8 +1,8 @@
 package clc
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	clc "github.com/CenturyLinkCloud/clc-sdk"
@@ -73,6 +73,13 @@ func resourceCLCServer() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
+
+			// optional: misc state storage
+			"metadata": &schema.Schema{
+				Type:     schema.TypeMap,
+				Optional: true,
+			},
+
 			// sorta computed
 			"private_ip_address": &schema.Schema{
 				Type:     schema.TypeString,
@@ -92,6 +99,11 @@ func resourceCLCServer() *schema.Resource {
 				Computed: true,
 			},
 			"modified_date": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"public_ip_address": &schema.Schema{
+				// RO: if a public_ip is on this server, populate it
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -134,7 +146,7 @@ func resourceCLCServerCreate(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Failed parsing disks: %v", err)
 	}
 	spec.Additionaldisks = disks
-	fields, err := parseCustomfields(d)
+	fields, err := parseCustomFields(d)
 	if err != nil {
 		return fmt.Errorf("Failed setting customfields: %v", err)
 	}
@@ -147,9 +159,6 @@ func resourceCLCServerCreate(d *schema.ResourceData, meta interface{}) error {
 	// server's UUID returned under rel=self link
 	_, uuid := resp.Links.GetID("self")
 
-	js, _ := json.MarshalIndent(resp, "", "  ")
-	LOG.Println(string(js))
-
 	ok, st := resp.GetStatusID()
 	if !ok {
 		return fmt.Errorf("Failed extracting status to poll on %v: %v", resp, err)
@@ -161,7 +170,7 @@ func resourceCLCServerCreate(d *schema.ResourceData, meta interface{}) error {
 
 	s, err := client.Server.Get(uuid)
 	d.SetId(strings.ToUpper(s.Name))
-	LOG.Printf("Server created. id: %v", s.Name)
+	log.Printf("[INFO] Server created. id: %v", s.Name)
 	return resourceCLCServerRead(d, meta)
 }
 
@@ -169,15 +178,15 @@ func resourceCLCServerRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*clc.Client)
 	s, err := client.Server.Get(d.Id())
 	if err != nil {
-		LOG.Printf("Failed finding server: %v. Marking destroyed", d.Id())
+		log.Printf("[INFO] Failed finding server: %v. Marking destroyed", d.Id())
 		d.SetId("")
 		return nil
 	}
-	js, _ := json.Marshal(s.Details)
-	LOG.Println(string(js))
-
 	if len(s.Details.IPaddresses) > 0 {
 		d.Set("private_ip_address", s.Details.IPaddresses[0].Internal)
+		if "" != s.Details.IPaddresses[0].Public {
+			d.Set("public_ip_address", s.Details.IPaddresses[0].Public)
+		}
 	}
 
 	d.Set("name", s.Name)
@@ -242,7 +251,7 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	if d.HasChange("custom_fields") {
 		d.SetPartial("custom_fields")
-		fields, err := parseCustomfields(d)
+		fields, err := parseCustomFields(d)
 		if err != nil {
 			return fmt.Errorf("Failed setting customfields: %v", err)
 		}
@@ -257,8 +266,6 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		updates = append(updates, server.UpdateAdditionaldisks(disks))
 	}
 
-	js, _ := json.Marshal(updates)
-	LOG.Printf("updates: %v", string(js))
 	if len(updates) > 0 {
 		resp, err := client.Server.Update(id, updates...)
 		if err != nil {
@@ -273,19 +280,17 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if status.Failed() {
 			return fmt.Errorf("Update failed")
 		}
-		LOG.Printf("Server updated! status: %v", status.Status)
+		log.Printf("[INFO] Server updated! status: %v", status.Status)
 	}
 
 	if d.HasChange("power_state") {
 		st := d.Get("power_state").(string)
-		LOG.Printf("POWER: %v => %v", s.Details.Powerstate, st)
+		log.Printf("[DEBUG] POWER: %v => %v", s.Details.Powerstate, st)
 		newst := stateFromString(st)
 		servers, err := client.Server.PowerState(newst, s.Name)
 		if err != nil {
 			return fmt.Errorf("Failed setting power state to: %v", newst)
 		}
-		js, _ := json.Marshal(servers)
-		LOG.Printf("received power state response: %v", string(js))
 		ok, id := servers[0].GetStatusID()
 		if !ok {
 			return fmt.Errorf("Failed extracting power state queue status from: %v", servers[0])
@@ -298,7 +303,7 @@ func resourceCLCServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if status.Failed() {
 			return fmt.Errorf("Update failed")
 		}
-		LOG.Printf("state updated: %v", status)
+		log.Printf("[INFO] state updated: %v", status)
 	}
 
 	d.Partial(false)
