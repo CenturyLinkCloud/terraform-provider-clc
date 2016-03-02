@@ -7,7 +7,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/CenturyLinkCloud/clc-sdk",
-			"Rev": f1c763bade7d91f2b8914267bd98a8fd207f50f9""
+			"Rev": "f1c763bade7d91f2b8914267bd98a8fd207f50f9"
 		},
 		{
 			"ImportPath": "github.com/hashicorp/errwrap",
