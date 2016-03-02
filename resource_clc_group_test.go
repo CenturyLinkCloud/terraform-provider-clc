@@ -96,7 +96,7 @@ func testAccCheckGroupExists(n string, resp *group.Response) resource.TestCheckF
 
 const testAccCheckGroupConfigBasic = `
 resource "clc_group" "acc_test_group" {
-    location_id = "WA1"
-    name = "foobar"
-    parent = "Default Group"
+  location_id = "WA1"
+  name        = "foobar"
+  parent      = "Default Group"
 }`

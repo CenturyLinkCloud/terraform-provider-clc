@@ -57,12 +57,12 @@ func resourceCLCLoadBalancerPoolCreate(d *schema.ResourceData, meta interface{})
 
 	s1 := d.Get("method").(string)
 	m := lb.LeastConn
-	if s1 == fmt.Sprintf("%v", lb.RoundRobin) {
+	if s1 == string(lb.RoundRobin) {
 		m = lb.RoundRobin
 	}
 	s2 := d.Get("persistence").(string)
 	p := lb.Standard
-	if s2 == fmt.Sprintf("%v", lb.Sticky) {
+	if s2 == string(lb.Sticky) {
 		p = lb.Sticky
 	}
 	r2 := lb.Pool{
@@ -75,19 +75,7 @@ func resourceCLCLoadBalancerPoolCreate(d *schema.ResourceData, meta interface{})
 		return fmt.Errorf("Failed creating pool under %v/%v: %v", dc, lbid, err)
 	}
 	d.SetId(lbp.ID)
-
-	nodes, err := parseNodes(d)
-	if err != nil {
-		return err
-	}
-
-	// HACK: create does not allow pegging nodes so do an immediate update
-	err = client.LB.UpdateNodes(dc, lbid, lbp.ID, nodes...)
-	if err != nil {
-		return fmt.Errorf("Failed setting nodes on %v: %v", lbp.ID, err)
-	}
-
-	return resourceCLCLoadBalancerPoolRead(d, meta)
+	return resourceCLCLoadBalancerPoolUpdate(d, meta)
 }
 
 func resourceCLCLoadBalancerPoolRead(d *schema.ResourceData, meta interface{}) error {
@@ -97,7 +85,9 @@ func resourceCLCLoadBalancerPoolRead(d *schema.ResourceData, meta interface{}) e
 	id := d.Id()
 	pool, err := client.LB.GetPool(dc, lbid, id)
 	if err != nil {
-		return fmt.Errorf("Failed fetching pool under %v/%v: %v", dc, lbid, err)
+		log.Printf("[INFO] Failed fetching pool %v/%v. Marking destroyed", lbid, d.Id())
+		d.SetId("")
+		return nil
 	}
 	nodes, err := client.LB.GetAllNodes(dc, lbid, id)
 	nodes2 := make([]lb.Node, len(nodes))
@@ -123,11 +113,11 @@ func resourceCLCLoadBalancerPoolUpdate(d *schema.ResourceData, meta interface{})
 
 	if d.HasChange("method") {
 		d.SetPartial("method")
-		pool.Method = d.Get("method").(lb.Method)
+		pool.Method = lb.Method(d.Get("method").(string))
 	}
 	if d.HasChange("persistence") {
 		d.SetPartial("persistence")
-		pool.Persistence = d.Get("persistence").(lb.Persistence)
+		pool.Persistence = lb.Persistence(d.Get("persistence").(string))
 	}
 	err = client.LB.UpdatePool(dc, lbid, id, *pool)
 	if err != nil {
@@ -145,7 +135,7 @@ func resourceCLCLoadBalancerPoolUpdate(d *schema.ResourceData, meta interface{})
 			return fmt.Errorf("Failed updating pool nodes %v: %v", id, err)
 		}
 	}
-	return nil
+	return resourceCLCLoadBalancerPoolRead(d, meta)
 }
 
 func resourceCLCLoadBalancerPoolDelete(d *schema.ResourceData, meta interface{}) error {

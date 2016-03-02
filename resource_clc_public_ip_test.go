@@ -124,35 +124,35 @@ func testAccCheckPublicIPNIC(n string, resp *server.PublicIP) resource.TestCheck
 
 var testAccCheckPublicIPConfigBasic = `
 resource "clc_group" "acc_test_group_ip" {
-    location_id = "CA1"
-    name = "acc_test_group_ip"
-    parent = "Default Group"
+  location_id		= "CA1"
+  name			= "acc_test_group_ip"
+  parent		= "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
-    name_template = "test"
-    source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group_ip.id}"
-    cpu = 1
-    memory_mb = 1024
-    password = "Green123$"
+  name_template		= "test"
+  source_server_id	= "UBUNTU-14-64-TEMPLATE"
+  group_id		= "${clc_group.acc_test_group_ip.id}"
+  cpu			= 1
+  memory_mb		= 1024
+  password		= "Green123$"
 }
 
 resource "clc_public_ip" "acc_test_public_ip" {
-    server_id = "${clc_server.acc_test_server.id}"
-    internal_ip_address = "${clc_server.acc_test_server.private_ip_address}"
-    source_restrictions
-       { cidr = "108.19.67.15/32" }
-    ports
-      {
-	protocol = "TCP"
-	port = 80
-      }
-    ports
-      {
-	protocol = "UDP"
-	port = 53
-        port_to = 55
-      }
+  server_id		= "${clc_server.acc_test_server.id}"
+  internal_ip_address	= "${clc_server.acc_test_server.private_ip_address}"
+  source_restrictions
+     { cidr		= "108.19.67.15/32" }
+  ports
+    {
+      protocol		= "TCP"
+      port		= 80
+    }
+  ports
+    {
+      protocol		= "UDP"
+      port		= 53
+      port_to		= 55
+    }
 }
 `

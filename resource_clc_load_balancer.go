@@ -3,10 +3,12 @@ package clc
 import (
 	"fmt"
 	"log"
+	"time"
 
 	clc "github.com/CenturyLinkCloud/clc-sdk"
 	"github.com/CenturyLinkCloud/clc-sdk/lb"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -25,14 +27,15 @@ func resourceCLCLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"status": &schema.Schema{
+			"description": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
 			// optional
-			"description": &schema.Schema{
+			"status": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default:  "enabled",
 			},
 			// computed
 			"ip_address": &schema.Schema{
@@ -59,14 +62,13 @@ func resourceCLCLoadBalancerCreate(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Failed creating load balancer under %v/%v: %v", dc, name, err)
 	}
 	d.SetId(l.ID)
-	// platform bug - race condition: poll for non-404
-	for {
+	return resource.Retry(1*time.Minute, func() error {
 		_, err := client.LB.Get(dc, l.ID)
 		if err == nil {
-			break
+			return resourceCLCLoadBalancerRead(d, meta)
 		}
-	}
-	return nil
+		return &resource.RetryError{Err: err}
+	})
 }
 
 func resourceCLCLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
@@ -88,28 +90,27 @@ func resourceCLCLoadBalancerRead(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceCLCLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) error {
-	//client := meta.(*clc.Client)
 	update := lb.LoadBalancer{}
 	client := meta.(*clc.Client)
 	dc := d.Get("data_center").(string)
 	id := d.Id()
 
 	if d.HasChange("name") {
-		d.SetPartial("name")
 		update.Name = d.Get("name").(string)
 	}
 	if d.HasChange("description") {
-		d.SetPartial("description")
 		update.Description = d.Get("description").(string)
 	}
 	if d.HasChange("status") {
-		d.SetPartial("status")
 		update.Status = d.Get("status").(string)
 	}
 	if update.Name != "" || update.Description != "" || update.Status != "" {
-		client.LB.Update(dc, id, update)
+		err := client.LB.Update(dc, id, update)
+		if err != nil {
+			return fmt.Errorf("Failed updating load balancer under %v/%v: %v", dc, id, err)
+		}
 	}
-	return nil
+	return resourceCLCLoadBalancerRead(d, meta)
 }
 
 func resourceCLCLoadBalancerDelete(d *schema.ResourceData, meta interface{}) error {

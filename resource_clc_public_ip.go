@@ -154,7 +154,7 @@ func resourceCLCPublicIPDelete(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("[INFO] Public IP sucessfully deleted: %v", ip)
+	log.Printf("[INFO] Public IP sucessfully deleted: %v", ip)
 	return nil
 }
 

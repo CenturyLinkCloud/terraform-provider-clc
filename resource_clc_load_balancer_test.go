@@ -89,16 +89,16 @@ func testAccCheckLBExists(n string, resp *lb.LoadBalancer) resource.TestCheckFun
 
 const testAccCheckLBConfigBasic = `
 resource "clc_load_balancer" "acc_test_lb" {
-    data_center = "WA1"
-    name = "acc_test_lb"
-    description = "load balancer test"
-    status = "enabled"
+  data_center	= "WA1"
+  name		= "acc_test_lb"
+  description	= "load balancer test"
+  status	= "enabled"
 }`
 
 const testAccCheckLBConfigNameDesc = `
 resource "clc_load_balancer" "acc_test_lb" {
-    data_center = "WA1"
-    name = "foobar"
-    description = "foobar"
-    status = "disabled"
+  data_center	= "WA1"
+  name		= "foobar"
+  description	= "foobar"
+  status	= "disabled"
 }`

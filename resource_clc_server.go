@@ -74,10 +74,17 @@ func resourceCLCServer() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 
-			// optional: misc state storage
+			// optional: misc state storage. non-CLC field
 			"metadata": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
+			},
+
+			// optional
+			"storage_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "standard",
 			},
 
 			// sorta computed
@@ -93,6 +100,7 @@ func resourceCLCServer() *schema.Resource {
 				Computed: true,
 				Default:  nil,
 			},
+
 			// computed
 			"created_date": &schema.Schema{
 				Type:     schema.TypeString,
@@ -107,21 +115,6 @@ func resourceCLCServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			/*
-				"ttl": &schema.Schema{
-					Type:     schema.TypeInt,
-					Optional: true,
-				},
-				"packages": &schema.Schema{
-					Type:     schema.TypeList,
-					Optional: true,
-				},
-				"metal_configuration_id": &schema.Schema{
-					Type:     schema.TypeBool,
-					Optional: true,
-					Default:  true,
-				},
-			*/
 		},
 	}
 }
@@ -139,6 +132,7 @@ func resourceCLCServerCreate(d *schema.ResourceData, meta interface{}) error {
 		Type:           d.Get("type").(string),
 		IPaddress:      d.Get("private_ip_address").(string),
 		NetworkID:      d.Get("network_id").(string),
+		Storagetype:    d.Get("storage_type").(string),
 	}
 
 	var err error
@@ -198,6 +192,7 @@ func resourceCLCServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("memory_mb", s.Details.MemoryMB)
 	d.Set("disk_gb", s.Details.Storagegb)
 	d.Set("status", s.Status)
+	d.Set("storage_type", s.Storagetype)
 	d.Set("created_date", s.ChangeInfo.CreatedDate)
 	d.Set("modified_date", s.ChangeInfo.ModifiedDate)
 	return nil
@@ -327,6 +322,6 @@ func resourceCLCServerDelete(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Server sucessfully deleted: %v", st)
+	log.Printf("[INFO] Server sucessfully deleted: %v", st)
 	return nil
 }

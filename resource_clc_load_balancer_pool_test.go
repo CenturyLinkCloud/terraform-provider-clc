@@ -74,46 +74,40 @@ func testAccCheckLBPExists(n string, resp *lb.Pool) resource.TestCheckFunc {
 const testAccCheckLBPConfigBasic = `
 
 resource "clc_group" "acc_test_lbp_group" {
-  location_id = "WA1"
-  name = "acc_test_lbp_group"
-  parent = "Default Group"
+  location_id		= "WA1"
+  name			= "acc_test_lbp_group"
+  parent		= "Default Group"
 }
 
 # need a server here because we need to reference an ip owned by this account
 resource "clc_server" "acc_test_lbp_server" {
-  name_template = "node"
-  description = "load balanced node"
-  source_server_id = "UBUNTU-14-64-TEMPLATE"
-  type = "standard"
-  group_id = "${clc_group.acc_test_lbp_group.id}"
-  cpu = 1
-  memory_mb = 1024
-  password = "Green123$"
-  power_state = "started"
+  name_template		= "node"
+  description		= "load balanced node"
+  source_server_id	= "UBUNTU-14-64-TEMPLATE"
+  type			= "standard"
+  group_id		= "${clc_group.acc_test_lbp_group.id}"
+  cpu			= 1
+  memory_mb		= 1024
+  password		= "Green123$"
+  power_state		= "started"
 }
 
 resource "clc_load_balancer" "acc_test_lbp" {
-    data_center = "WA1"
-    name = "acc_test_lb"
-    description = "load balancer test"
-    status = "enabled"
+  data_center		= "WA1"
+  name			= "acc_test_lb"
+  description		= "load balancer test"
+  status		= "enabled"
 }
 
 resource "clc_load_balancer_pool" "acc_test_pool" {
-  port = 80
-  data_center = "WA1"
-  load_balancer = "${clc_load_balancer.acc_test_lbp.id}"
+  port			= 80
+  data_center		= "WA1"
+  load_balancer		= "${clc_load_balancer.acc_test_lbp.id}"
   nodes
     {
-      status = "enabled"
-      ipAddress = "${clc_server.acc_test_lbp_server.private_ip_address}"
-      privatePort = 80
+      status		= "enabled"
+      ipAddress		= "${clc_server.acc_test_lbp_server.private_ip_address}"
+      privatePort	= 80
     }
-  #nodes
-  #  {
-  #    status = "disabled"
-  #    ipAddress = "10.50.180.12"
-  #    privatePort = 80
-  #  }  
 }
 `

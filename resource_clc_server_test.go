@@ -178,97 +178,79 @@ func testAccCheckServerUpdatedDisks(n string, resp *server.Response) resource.Te
 
 const testAccCheckServerConfigBasic = `
 resource "clc_group" "acc_test_group_server" {
-    location_id = "WA1"
-    name = "acc_test_group_server"
-    parent = "Default Group"
+  location_id	= "WA1"
+  name		= "acc_test_group_server"
+  parent	= "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
-    name_template = "test"
-    source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group_server.id}"
-    cpu = 1
-    memory_mb = 1024
-    password = "Green123$"
+  name_template		= "test"
+  source_server_id	= "UBUNTU-14-64-TEMPLATE"
+  group_id		= "${clc_group.acc_test_group_server.id}"
+  cpu			= 1
+  memory_mb		= 1024
+  password		= "Green123$"
 }
 `
 
 const testAccCheckServerConfigCPUMEM = `
 resource "clc_group" "acc_test_group_server" {
-    location_id = "WA1"
-    name = "acc_test_group_server"
-    parent = "Default Group"
+  location_id	= "WA1"
+  name		= "acc_test_group_server"
+  parent	= "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
-    name_template = "test"
-    source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group_server.id}"
-    cpu = 2
-    memory_mb = 2048
-    password = "Green123$"
-    power_state = "started"
+  name_template		= "test"
+  source_server_id	= "UBUNTU-14-64-TEMPLATE"
+  group_id		= "${clc_group.acc_test_group_server.id}"
+  cpu			= 2
+  memory_mb		= 2048
+  password		= "Green123$"
+  power_state		= "started"
 }
 `
 
 const testAccCheckServerConfigPower = `
 resource "clc_group" "acc_test_group_server" {
-    location_id = "WA1"
-    name = "acc_test_group_server"
-    parent = "Default Group"
+  location_id	= "WA1"
+  name		= "acc_test_group_server"
+  parent	= "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
-    name_template = "test"
-    source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group_server.id}"
-    cpu = 2
-    memory_mb = 2048
-    password = "Green123$"
-    power_state = "stopped"
+  name_template		= "test"
+  source_server_id	= "UBUNTU-14-64-TEMPLATE"
+  group_id		= "${clc_group.acc_test_group_server.id}"
+  cpu			= 2
+  memory_mb		= 2048
+  password		= "Green123$"
+  power_state		= "stopped"
 }
 `
 
 const testAccCheckServerConfigDisks = `
 resource "clc_group" "acc_test_group_server" {
-    location_id = "WA1"
-    name = "acc_test_group_server"
-    parent = "Default Group"
+  location_id	= "WA1"
+  name		= "acc_test_group_server"
+  parent	= "Default Group"
 }
 
 resource "clc_server" "acc_test_server" {
-    name_template = "test"
-    source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group_server.id}"
-    cpu = 2
-    memory_mb = 2048
-    password = "Green123$"
-    power_state = "stopped"
-    additional_disks
-        {
-            path = "/data1"
-            size_gb = 100
-            type = "partitioned"
-        }
+  name_template		= "test"
+  source_server_id	= "UBUNTU-14-64-TEMPLATE"
+  group_id		= "${clc_group.acc_test_group_server.id}"
+  cpu			= 2
+  memory_mb		= 2048
+  password		= "Green123$"
+  power_state		= "stopped"
+  # network_id = "15a0f669c332435ebf375e010ac79fbb"
+  additional_disks
+    {
+      path = "/data1"
+      size_gb = 100
+      type = "partitioned"
+    }
 
-}
-`
-
-const testAccCheckServerConfigNetwork = `
-resource "clc_group" "acc_test_group_server" {
-    location_id = "WA1"
-    name = "acc_test_group_server"
-    parent = "Default Group"
-}
-
-resource "clc_server" "acc_test_server" {
-    name_template = "test"
-    source_server_id = "UBUNTU-14-64-TEMPLATE"
-    group_id = "${clc_group.acc_test_group_server.id}"
-    cpu = 2
-    memory_mb = 2048
-    password = "Green123$"
-    power_state = "stopped"
-    # network_id = "15a0f669c332435ebf375e010ac79fbb"
 }
 `

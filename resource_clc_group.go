@@ -59,19 +59,19 @@ func resourceCLCGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 	name := d.Get("name").(string)
 	// use an existing group if we have one
-	if m[name] != "" {
-		log.Printf("[INFO] Using EXISTING group: %v => %v", name, m[name])
-		d.SetId(m[name])
+	if id, ok := m[name]; ok {
+		log.Printf("[INFO] Using EXISTING group: %v => %v", name, id)
+		d.SetId(id)
 		return nil
 	}
 	// otherwise, we're creating one. we'll need a parent
 	p := d.Get("parent").(string)
-	parent := m[p]
-	if parent == "" {
+	if parent, ok := m[p]; ok {
+		d.Set("parent_group_id", parent)
+	} else {
 		return fmt.Errorf("Failed resolving parent group %s - %s", p, m)
 	}
 
-	d.Set("parent_group_id", parent)
 	spec := group.Group{
 		Name:          name,
 		Description:   d.Get("description").(string),
