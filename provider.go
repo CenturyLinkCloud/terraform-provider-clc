@@ -36,6 +36,12 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("CLC_ACCOUNT", nil),
 				Description: "Your CLC account alias",
 			},
+			"url": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "CLC API URL",
+				Default: "https://api.ctl.io/v2",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -54,7 +60,13 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	un := d.Get("username").(string)
 	pw := d.Get("password").(string)
 	ac := d.Get("account").(string)
-	config := api.NewConfig(un, pw, ac)
+	url := d.Get("url").(string)
+
+	config, config_err := api.NewConfig(un, pw, ac, url)
+	if config_err != nil {
+		return nil, fmt.Errorf("Failed to create CLC config with provided details: %v", config_err)
+	}
+
 	client := clc.New(config)
 	err := client.Authenticate()
 	if err != nil {
