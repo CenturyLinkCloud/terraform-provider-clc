@@ -71,6 +71,7 @@ func TestAccServerBasic(t *testing.T) {
 				),
 			},
 			*/
+			/* // broken since network id is a (account-specific) guid
 			// set network id
 			resource.TestStep{
 				Config: testAccCheckServerConfigNetwork,
@@ -81,6 +82,7 @@ func TestAccServerBasic(t *testing.T) {
 					testAccCheckServerUpdatedSpec("clc_server.acc_test_server", &resp),
 				),
 			},
+			*/
 		},
 	})
 }
@@ -267,7 +269,6 @@ resource "clc_server" "acc_test_server" {
     memory_mb = 2048
     password = "Green123$"
     power_state = "stopped"
-    network_id = "15a0f669c332435ebf375e010ac79fbb"
-
+    # network_id = "15a0f669c332435ebf375e010ac79fbb"
 }
 `
