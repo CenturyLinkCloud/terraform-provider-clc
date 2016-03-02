@@ -6,6 +6,10 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/CenturyLinkCloud/clc-sdk",
+			"Rev": f1c763bade7d91f2b8914267bd98a8fd207f50f9""
+		},
+		{
 			"ImportPath": "github.com/hashicorp/errwrap",
 			"Rev": "7554cd9344cec97297fa6649b055a8c98c2a1e55"
 		},

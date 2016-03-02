@@ -39,8 +39,8 @@ func Provider() terraform.ResourceProvider {
 			"url": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "CLC API URL",
-				Default: "https://api.ctl.io/v2",
+				Description: "Base CLC API url",
+				DefaultFunc: schema.EnvDefaultFunc("CLC_BASE_URL", nil),
 			},
 		},
 
