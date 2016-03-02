@@ -71,6 +71,16 @@ func TestAccServerBasic(t *testing.T) {
 				),
 			},
 			*/
+			// set network id
+			resource.TestStep{
+				Config: testAccCheckServerConfigNetwork,
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckServerExists("clc_server.acc_test_server", &resp),
+					resource.TestCheckResourceAttr(
+						"clc_server.acc_test_server", "network_id", "15a0f669c332435ebf375e010ac79fbb"),
+					testAccCheckServerUpdatedSpec("clc_server.acc_test_server", &resp),
+				),
+			},
 		},
 	})
 }
@@ -238,6 +248,26 @@ resource "clc_server" "acc_test_server" {
             size_gb = 100
             type = "partitioned"
         }
+
+}
+`
+
+const testAccCheckServerConfigNetwork = `
+resource "clc_group" "acc_test_group_server" {
+    location_id = "WA1"
+    name = "acc_test_group_server"
+    parent = "Default Group"
+}
+
+resource "clc_server" "acc_test_server" {
+    name_template = "test"
+    source_server_id = "UBUNTU-14-64-TEMPLATE"
+    group_id = "${clc_group.acc_test_group_server.id}"
+    cpu = 2
+    memory_mb = 2048
+    password = "Green123$"
+    power_state = "stopped"
+    network_id = "15a0f669c332435ebf375e010ac79fbb"
 
 }
 `
