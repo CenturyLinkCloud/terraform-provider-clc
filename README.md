@@ -1,3 +1,13 @@
+
+# = DEPRECATED =
+
+This plugin has been integrated into the builtin providers in terraform. 
+See the [Official Docs](https://www.terraform.io/docs/providers/clc/index.html) for usage.
+
+
+
+
+
 # terraform-provider-clc
 
 Terraform provider for CenturyLinkCloud.
